@@ -1,0 +1,32 @@
+{
+  "name": "emulator-6502",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "build": "npm run build:clear && npm run build:webpack && npm run build:cp-public",
+    "build:webpack": "webpack --mode production",
+    "build:mkdir": "cmd /C \"mkdir .\\dist || exit 0 \"",
+    "build:cp-public": "cmd /C \"copy .\\public\\** .\\dist\\\"",
+    "build:clear": "cmd /C \"RD /S /Q .\\dist || exit 0\"",
+    "start": "npm run build:mkdir && npm run start:webpack",
+    "start:webpack": "webpack serve --mode development",
+    "type": "tsc --noEmit",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "typescript": "4.2.4",
+    "lite-server": "2.6.1",
+    "webpack": "5.31.2",
+    "webpack-cli": "4.6.0",
+    "webpack-dev-server": "3.11.2",
+    "ts-loader": "8.1.0",
+    "mocha": "8.3.2",
+    "@types/mocha": "8.2.2",
+    "chai": "4.3.4",
+    "@types/chai": "4.2.16",
+    "ts-node": "9.1.1"
+  },
+  "author": "TheEyeOfBrows",
+  "license": "ISC"
+}
