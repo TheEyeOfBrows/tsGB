@@ -1,4 +1,4 @@
-# Toy 6502 emulator for TypeScript in the web browser
+# Toy gameboy emulator for TypeScript in the web browser
 
 ## Install dependencies
 ```
