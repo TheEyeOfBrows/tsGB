@@ -9,7 +9,7 @@
     "build:mkdir": "cmd /C \"mkdir .\\dist || exit 0 \"",
     "build:cp-public": "cmd /C \"copy .\\public\\** .\\dist\\\"",
     "build:clear": "cmd /C \"RD /S /Q .\\dist || exit 0\"",
-    "start": "npm run build:mkdir && npm run start:webpack",
+    "start": "npm run build:mkdir && npm run build:cp-public && npm run start:webpack",
     "start:webpack": "webpack serve --mode development",
     "type": "tsc --noEmit",
     "test": "mocha"

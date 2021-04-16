@@ -1,14 +1,17 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.ts',
-  devtool: 'inline-source-map',
+  context: path.resolve(__dirname, 'src'),
+  entry: './index.ts',
+  devtool: 'source-map',
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
         exclude: /(node_modules|test)/,
+        use: [{
+          loader: 'ts-loader'
+        }],
       },
     ],
   },
@@ -20,7 +23,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   devServer: {
-    contentBase: path.resolve(__dirname, './dist'),
+    contentBase: path.resolve(__dirname, 'dist'),
     hot: true,
     host: "localhost",
     port: 8080,
