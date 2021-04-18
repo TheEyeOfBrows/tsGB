@@ -142,10 +142,17 @@ export default class Z80_GB {
   INC_B() { this.B++; this.F &= ~F.N; this.F |= this.B ? 0 : F.Z; this.c = 1; }
   DEC_B() { this.B--; this.F &= ~F.N; this.F |= this.B ? 0 : F.Z; this.c = 1; }
   LD_Bn() { this.B = this.mmu.rb(this.PC++); this.c = 2; }
+
+  // TODO review RLCA & RLA
   RLCA() {
-    let c = (this.F & F.C) === F.C;
-    this.F = (this.A & 0b10000000) ? F.C : 0;
-    this.A = (this.A << 1) + (c ? 1 : 0);
+    let c = ((this.F & F.C) === F.C) ? 1 : 0;
+    this.F = (this.A & 0x80) ? F.C : 0;
+    this.A = (this.A << 1) + c;
+    this.c = 1;
+  }
+  RLA() {
+    let c = this.A >> 7;
+    this.A = (this.A << 1) + c;
     this.c = 1;
   }
 

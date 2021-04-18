@@ -8,6 +8,8 @@ enum OPCODES {
   LD_Bn = 0x06,
   RLCA = 0x07,
 
+  RLA = 0x17,
+
   HALT = 0x76,
 }
 
