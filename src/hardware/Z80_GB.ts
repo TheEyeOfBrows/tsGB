@@ -26,7 +26,7 @@ enum R {
 }
 
 /** State flags for the 'f' char register */
-enum F {
+export enum F {
   /** Zero */ Z = 0b10000000,
   /** Negative */ N = 0b01000000,
   /** Half-carry */ H = 0b00100000,
@@ -34,6 +34,9 @@ enum F {
 }
 
 export default class Z80_GB {
+
+  private opMap: Array<Function> = [];
+
   /** Shared register buffer */
   private buffer: ArrayBuffer = new ArrayBuffer(12);
   /** 8bit registers view */
@@ -103,6 +106,7 @@ export default class Z80_GB {
   constructor(private mmu: MMU) {
     this.r8 = new Uint8Array(this.buffer);
     this.r16 = new Uint16Array(this.buffer);
+    this.makeOpMap();
   }
 
   public reset() {
@@ -123,30 +127,36 @@ export default class Z80_GB {
     let op: Function | undefined;
     while (this.shouldRun && this.ct < cycles) {
       opCode = this.fetchOp();
-      op = this.opMap.get(opCode);
+      op = this.opMap[opCode];
       if (op) {
         op.call(this);
         this.ct += this.c;
-      }
-      else console.warn(`OpCode not implemented [${opCode.toString(16)}]`);
+      } else console.warn(`OpCode not implemented [${opCode.toString(16)}]`);
     }
   }
 
-  NOP() { this.c=1; }
-  LD_BCnn() { this.BC = this.mmu.rw(this.PC); this.PC+=2; this.c=3; }
-  LD_BCmA() { this.mmu.wb(this.A, this.BC); this.c=2; }
-  INC_BC() { this.BC++; this.c=2; }
-  INC_B() { this.B++; this.F &= ~F.N; this.F |= (this.B ? 0 : F.Z); this.c=1;}
-  DEC_B() { this.B--; this.F &= ~F.N; this.F |= (this.B ? 0 : F.Z); this.c=1; }
-  LD_Bn() { this.B = this.mmu.rb(this.PC++); this.c=2; }
+  NOP() { this.c = 1; }
+  LD_BCnn() { this.BC = this.mmu.rw(this.PC); this.PC += 2; this.c = 3; }
+  LD_BCmA() { this.mmu.wb(this.A, this.BC); this.c = 2; }
+  INC_BC() { this.BC++; this.c = 2; }
+  INC_B() { this.B++; this.F &= ~F.N; this.F |= this.B ? 0 : F.Z; this.c = 1; }
+  DEC_B() { this.B--; this.F &= ~F.N; this.F |= this.B ? 0 : F.Z; this.c = 1; }
+  LD_Bn() { this.B = this.mmu.rb(this.PC++); this.c = 2; }
+  RLCA() {
+    let c = (this.F & F.C) === F.C;
+    this.F = (this.A & 0b10000000) ? F.C : 0;
+    this.A = (this.A << 1) + (c ? 1 : 0);
+    this.c = 1;
+  }
 
-  private opMap: Map<number, Function> = new Map([
-    [OP.NOP, this.NOP],
-    [OP.LD_BCnn, this.LD_BCnn],
-    [OP.LD_BCmA, this.LD_BCmA],
-    [OP.INC_BC, this.INC_BC],
-    [OP.INC_B, this.INC_B],
-    [OP.DEC_B, this.DEC_B],
-    [OP.LD_Bn, this.LD_Bn],
-  ]);
+  private makeOpMap() {
+    this.opMap[OP.NOP] = this.NOP;
+    this.opMap[OP.LD_BCnn] = this.LD_BCnn;
+    this.opMap[OP.LD_BCmA] = this.LD_BCmA;
+    this.opMap[OP.INC_BC] = this.INC_BC;
+    this.opMap[OP.INC_B] = this.INC_B;
+    this.opMap[OP.DEC_B] = this.DEC_B;
+    this.opMap[OP.LD_Bn] = this.LD_Bn;
+    this.opMap[OP.RLCA] = this.RLCA;
+  }
 }

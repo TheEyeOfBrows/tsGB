@@ -6,6 +6,7 @@ enum OPCODES {
   INC_B = 0x04,
   DEC_B = 0x05,
   LD_Bn = 0x06,
+  RLCA = 0x07,
 
   HALT = 0x76,
 }
