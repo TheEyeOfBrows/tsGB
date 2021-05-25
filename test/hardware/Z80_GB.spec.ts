@@ -104,26 +104,27 @@ describe("Z80", () => {
     });
 
     it("RLCA", () => {
-      cpu.A = 0b01010101;
+      cpu.A = 0b10101010;
       cpu.RLCA();
+      expect(cpu.A).to.equal(0b01010101);
+      cpu.RLCA();
+      expect(cpu.A).to.equal(0b10101010);
+    });
+    it("RLC", () => {
+      cpu.A = 0b01010101;
+      cpu.RLA();
       expect(cpu.A).to.equal(0b10101010);
       expect(cpu.F).to.equal(0);
 
-      cpu.RLCA();
+      cpu.RLA();
       expect(cpu.A).to.equal(0b01010100);
       expect(cpu.F).to.equal(FLAG.C);
 
-      cpu.RLCA();
+      cpu.RLA();
       expect(cpu.A).to.equal(0b10101001);
       expect(cpu.F).to.equal(0);
     });
 
-    it("RLA", () => {
-      cpu.A = 0b10101010;
-      cpu.RLA();
-      expect(cpu.A).to.equal(0b01010101);
-      cpu.RLA();
-      expect(cpu.A).to.equal(0b10101010);
-    });
+
   });
 });

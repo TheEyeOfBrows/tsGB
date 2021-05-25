@@ -1,17 +1,20 @@
 import * as mocha from "mocha";
 import * as chai from "chai";
 
-import MMU from "../../src/hardware/MMU";
+import MMU, { MAP } from "../../src/hardware/MMU";
 
 const expect = chai.expect;
 describe("MMU", () => {
   it("initializes", () => {
     let mmu = new MMU();
+    mmu.wb(0xFF, MAP.RAM);
     mmu.reset();
+    let actual = mmu.rb(MAP.RAM);
+    expect(actual).to.equal(0);
   });
 
   it("writes words", () => {
-    let mmuAddress = 0xfe;
+    let mmuAddress =  MAP.RAM + 50;;
     let targetValue = 0xf0e0;
     let highExpected = 0xf0;
     let lowExpected = 0xe0;
@@ -19,31 +22,25 @@ describe("MMU", () => {
     mmu.reset();
     mmu.ww(targetValue, mmuAddress);
 
-    // expect(mmu.data[mmuAddress]).to.equal(lowExpected);
-    // expect(mmu.data[mmuAddress + 1]).to.equal(highExpected);
+    let lowActual = mmu.rb(mmuAddress);
+    let highActual = mmu.rb(mmuAddress + 1);
+    expect(lowActual).to.equal(lowExpected);
+    expect(highActual).to.equal(highExpected);
   });
 
   it("reads words", () => {
-    let mmuAddress = 0xfe;
+    let mmuAddress = MAP.RAM + 50;
     let expected = 0xf0e0;
     let highActual = 0xf0;
     let lowActual = 0xe0;
 
     let mmu = new MMU();
-    // mmu.Initialize();
-    // mmu.data[mmuAddress] = lowActual;
-    // mmu.data[mmuAddress + 1] = highActual;
+    mmu.reset();
+    mmu.wb(lowActual, mmuAddress);
+    mmu.wb(highActual, mmuAddress + 1);
 
-    // let actual = mmu.ReadWord(mmuAddress);
+    let actual = mmu.rw(mmuAddress);
 
-    // expect(actual).to.equal(expected);
-    // expect(mmu.data[mmuAddress - 1]).to.equal(
-    //   0,
-    //   "mmuory before target has been modified"
-    // );
-    // expect(mmu.data[mmuAddress + 2]).to.equal(
-    //   0,
-    //   "mmuory after target has been modified"
-    // );
+    expect(actual).to.equal(expected);
   });
 });
